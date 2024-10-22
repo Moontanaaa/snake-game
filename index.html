@@ -14,7 +14,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            height: auto;
             background: linear-gradient(135deg, #1e7225, #982a2a);
         }
 
@@ -80,13 +80,13 @@
             const minDimension = Math.min(window.innerWidth, window.innerHeight) * 0.8;
             canvas.width = Math.floor(minDimension / 20) * 20;
             canvas.height = canvas.width;
-            boxSize = canvas.width / 20; // 20 boxes to fit the canvas size
+            boxSize = canvas.width / 20; 
         }
 
         window.addEventListener("resize", resizeCanvas);
 
         function initGame() {
-            resizeCanvas(); // Resize the canvas on init
+            resizeCanvas(); 
             snake = [{ x: boxSize * 10, y: boxSize * 10 }];
             food = { x: Math.floor(Math.random() * 20) * boxSize, y: Math.floor(Math.random() * 20) * boxSize };
             direction = { x: 0, y: 0 };
