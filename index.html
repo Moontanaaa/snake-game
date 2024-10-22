@@ -65,7 +65,7 @@
 
     <h1>Snake Game</h1>
     <div class="score">Score: <span id="score">0</span></div>
-    <canvas id="snakeGame" width="400" height="400"></canvas>
+    <canvas id="snakeGame"></canvas>
     <button id="resetButton">Recommencer</button>
 
     <script>
@@ -74,16 +74,20 @@
         const scoreDisplay = document.getElementById("score");
         const resetButton = document.getElementById("resetButton");
 
-        const boxSize = 20;
-        let snake, food, direction, score, game;
+        let boxSize, snake, food, direction, score, game;
 
-        let touchStartX = 0;
-        let touchStartY = 0;
-        let touchEndX = 0;
-        let touchEndY = 0;
+        function resizeCanvas() {
+            const minDimension = Math.min(window.innerWidth, window.innerHeight) * 0.8;
+            canvas.width = Math.floor(minDimension / 20) * 20;
+            canvas.height = canvas.width;
+            boxSize = canvas.width / 20; // 20 boxes to fit the canvas size
+        }
+
+        window.addEventListener("resize", resizeCanvas);
 
         function initGame() {
-            snake = [{ x: 200, y: 200 }];
+            resizeCanvas(); // Resize the canvas on init
+            snake = [{ x: boxSize * 10, y: boxSize * 10 }];
             food = { x: Math.floor(Math.random() * 20) * boxSize, y: Math.floor(Math.random() * 20) * boxSize };
             direction = { x: 0, y: 0 };
             score = 0;
@@ -143,48 +147,46 @@
             return false;
         }
 
-        function handleTouchStart(e) {
+        document.addEventListener("keydown", changeDirection);
+
+        resetButton.addEventListener("click", initGame);
+
+        resizeCanvas();
+        initGame();
+
+        let touchStartX = 0;
+        let touchStartY = 0;
+
+        document.addEventListener('touchstart', function(e) {
+            e.preventDefault();
             touchStartX = e.touches[0].clientX;
             touchStartY = e.touches[0].clientY;
-        }
+        });
 
-        function handleTouchMove(e) {
-            touchEndX = e.touches[0].clientX;
-            touchEndY = e.touches[0].clientY;
-        }
+        document.addEventListener('touchend', function(e) {
+            const touchEndX = e.changedTouches[0].clientX;
+            const touchEndY = e.changedTouches[0].clientY;
 
-        function handleTouchEnd() {
             const diffX = touchEndX - touchStartX;
             const diffY = touchEndY - touchStartY;
 
             if (Math.abs(diffX) > Math.abs(diffY)) {
-                // Swipe gauche ou droite
                 if (diffX > 0 && direction.x === 0) {
-                    direction = { x: boxSize, y: 0 }; // Droite
+                    direction = { x: boxSize, y: 0 }; // Right
                 } else if (diffX < 0 && direction.x === 0) {
-                    direction = { x: -boxSize, y: 0 }; // Gauche
+                    direction = { x: -boxSize, y: 0 }; // Left
                 }
             } else {
-                // Swipe haut ou bas
                 if (diffY > 0 && direction.y === 0) {
-                    direction = { x: 0, y: boxSize }; // Bas
+                    direction = { x: 0, y: boxSize }; // Down
                 } else if (diffY < 0 && direction.y === 0) {
-                    direction = { x: 0, y: -boxSize }; // Haut
+                    direction = { x: 0, y: -boxSize }; // Up
                 }
             }
-        }
-
-        document.addEventListener("keydown", changeDirection);
-        resetButton.addEventListener("click", initGame);
-
-        // Ajouter des événements pour gérer le swipe sur mobile
-        canvas.addEventListener("touchstart", handleTouchStart, false);
-        canvas.addEventListener("touchmove", handleTouchMove, false);
-        canvas.addEventListener("touchend", handleTouchEnd, false);
-
-        initGame();
+        });
     </script>
 
 </body>
 
 </html>
+
