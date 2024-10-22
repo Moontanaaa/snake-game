@@ -77,6 +77,11 @@
         const boxSize = 20;
         let snake, food, direction, score, game;
 
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchEndX = 0;
+        let touchEndY = 0;
+
         function initGame() {
             snake = [{ x: 200, y: 200 }];
             food = { x: Math.floor(Math.random() * 20) * boxSize, y: Math.floor(Math.random() * 20) * boxSize };
@@ -138,9 +143,44 @@
             return false;
         }
 
-        document.addEventListener("keydown", changeDirection);
+        function handleTouchStart(e) {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        }
 
+        function handleTouchMove(e) {
+            touchEndX = e.touches[0].clientX;
+            touchEndY = e.touches[0].clientY;
+        }
+
+        function handleTouchEnd() {
+            const diffX = touchEndX - touchStartX;
+            const diffY = touchEndY - touchStartY;
+
+            if (Math.abs(diffX) > Math.abs(diffY)) {
+                // Swipe gauche ou droite
+                if (diffX > 0 && direction.x === 0) {
+                    direction = { x: boxSize, y: 0 }; // Droite
+                } else if (diffX < 0 && direction.x === 0) {
+                    direction = { x: -boxSize, y: 0 }; // Gauche
+                }
+            } else {
+                // Swipe haut ou bas
+                if (diffY > 0 && direction.y === 0) {
+                    direction = { x: 0, y: boxSize }; // Bas
+                } else if (diffY < 0 && direction.y === 0) {
+                    direction = { x: 0, y: -boxSize }; // Haut
+                }
+            }
+        }
+
+        document.addEventListener("keydown", changeDirection);
         resetButton.addEventListener("click", initGame);
+
+        // Ajouter des événements pour gérer le swipe sur mobile
+        canvas.addEventListener("touchstart", handleTouchStart, false);
+        canvas.addEventListener("touchmove", handleTouchMove, false);
+        canvas.addEventListener("touchend", handleTouchEnd, false);
 
         initGame();
     </script>
